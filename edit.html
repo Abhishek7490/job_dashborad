@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Edit Job</title>
+</head>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    padding: 40px;
+    background-color: #f8f9fa;
+  }
+
+  h1 {
+    color: #333;
+    margin-bottom: 20px;
+  }
+
+  a {
+    text-decoration: none;
+    color: #007bff;
+    font-weight: bold;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+
+  th, td {
+    padding: 12px 15px;
+    border: 1px solid #dee2e6;
+    text-align: left;
+  }
+
+  th {
+    background-color: #343a40;
+    color: #fff;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f1f1f1;
+  }
+
+  button {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+
+  button:hover {
+    opacity: 0.8;
+  }
+
+  form input, form select, form textarea {
+    width: 100%;
+    padding: 8px;
+    margin-top: 6px;
+    margin-bottom: 16px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+
+  form button {
+    background-color: #28a745;
+    padding: 10px 16px;
+    font-weight: bold;
+  }
+
+  form button:hover {
+    background-color: #218838;
+  }
+
+  .back-link {
+    display: inline-block;
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: #555;
+  }
+</style>
+
+<body>
+  <h1>Edit Job</h1>
+  <a href="index.html">← Back to Dashboard</a>
+  <br><br>
+
+  <form id="jobForm">
+    <input type="text" name="title" placeholder="Job Title" required><br><br>
+
+    <select name="type" required>
+      <option>Full Time</option>
+      <option>Part Time</option>
+      <option>Internship</option>
+    </select><br><br>
+
+    <select name="status" required>
+      <option>Active</option>
+      <option>Expired</option>
+      <option>Draft</option>
+    </select><br><br>
+
+    <input type="number" name="applications" placeholder="Applications Count" required><br><br>
+    <input type="text" name="duration" placeholder="Duration" required><br><br>
+    <textarea name="description" placeholder="Description" required></textarea><br><br>
+
+    <button type="submit">Update</button>
+  </form>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const jobId = urlParams.get('id');
+
+    const form = document.getElementById('jobForm');
+
+    // Load existing job data
+    fetch(`http://localhost:8000/api/jobs/${jobId}`)
+      .then(res => res.json())
+      .then(job => {
+        form.title.value = job.title;
+        form.type.value = job.type;
+        form.status.value = job.status;
+        form.applications.value = job.applications;
+        form.duration.value = job.duration;
+        form.description.value = job.description;
+      });
+
+    // Handle update
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData.entries());
+
+      fetch(`http://localhost:8000/api/jobs/${jobId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      }).then(() => {
+        alert('Job updated!');
+        window.location.href = 'index.html';
+      });
+    });
+  </script>
+</body>
+</html>
